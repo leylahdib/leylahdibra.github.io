@@ -1,0 +1,203 @@
+this would be script.js if not combining html with js
+// ==========================================
+// STEP 1:
+// Generate a random number between 1 and 100.
+// Math.random() creates a decimal between 0 and 1.
+// Multiplying by 100 gives a number between 0 and 99.999...
+// Adding 1 makes it between 1 and 100.
+// Math.floor() removes the decimal.
+// ==========================================
+let randomNumber = Math.floor(Math.random() * 100) + 1;
+
+
+// ==========================================
+// Get references to the HTML elements.
+// We will use these variables to update the page.
+// ==========================================
+const guesses = document.querySelector(".guesses");
+const lastResult = document.querySelector(".lastResult");
+const lowOrHi = document.querySelector(".lowOrHi");
+
+const guessSubmit = document.querySelector(".guessSubmit");
+const guessField = document.querySelector(".guessField");
+
+
+// ==========================================
+// STEP 2:
+// Keep track of which turn the player is on.
+// The game starts on turn 1.
+// ==========================================
+let guessCount = 1;
+
+
+// Variable that will later store the restart button.
+let resetButton;
+
+
+// ==========================================
+// STEP 3:
+// Wait for the player to click the
+// "Submit guess" button.
+// When clicked, run checkGuess().
+// ==========================================
+guessSubmit.addEventListener("click", checkGuess);
+
+
+// ==========================================
+// This function runs every time the user
+// submits a guess.
+// ==========================================
+function checkGuess() {
+
+  // Convert the input value into a number.
+  const userGuess = Number(guessField.value);
+
+  // ==========================================
+  // STEP 4:
+  // Record previous guesses.
+  // On the first turn, create the label.
+  // Then add each guess after it.
+  // ==========================================
+  if (guessCount === 1) {
+    guesses.textContent = "Previous guesses: ";
+  }
+
+  guesses.textContent += userGuess + " ";
+
+  // ==========================================
+  // STEP 5:
+  // Check if the guess is correct.
+  // ==========================================
+  if (userGuess === randomNumber) {
+
+    // ==========================================
+    // STEP 6:
+    // If correct:
+    // - Show congratulations message
+    // - Clear high/low message
+    // - End the game
+    // ==========================================
+    lastResult.textContent =
+      "Congratulations! You guessed correctly!";
+
+    lastResult.style.backgroundColor = "green";
+
+    lowOrHi.textContent = "";
+
+    setGameOver();
+  }
+
+  // ==========================================
+  // STEP 8:
+  // If this was the 10th guess and
+  // the player is still wrong,
+  // the game ends.
+  // ==========================================
+  else if (guessCount === 10) {
+
+    lastResult.textContent = "GAME OVER!";
+    lastResult.style.backgroundColor = "red";
+
+    lowOrHi.textContent = "";
+
+    setGameOver();
+  }
+
+  else {
+
+    // ==========================================
+    // STEP 7:
+    // The guess is wrong, but there are
+    // still turns remaining.
+    // Tell the player whether the guess
+    // was too high or too low.
+    // ==========================================
+    lastResult.textContent = "Wrong!";
+    lastResult.style.backgroundColor = "red";
+
+    if (userGuess < randomNumber) {
+      lowOrHi.textContent =
+        "Your last guess was too low!";
+    } else {
+      lowOrHi.textContent =
+        "Your last guess was too high!";
+    }
+  }
+
+  // Move to the next turn.
+  guessCount++;
+
+  // Clear the input box so the user
+  // can type a new guess.
+  guessField.value = "";
+
+  // Put the cursor back in the box.
+  guessField.focus();
+}
+
+
+// ==========================================
+// This function is called when the game
+// has been won or lost.
+// ==========================================
+function setGameOver() {
+
+  // Disable input so no more guesses
+  // can be entered.
+  guessField.disabled = true;
+  guessSubmit.disabled = true;
+
+  // Create a restart button.
+  resetButton = document.createElement("button");
+
+  // Text shown on the button.
+  resetButton.textContent = "Start New Game";
+
+  // Add the button to the page.
+  document.body.appendChild(resetButton);
+
+  // When the button is clicked,
+  // run resetGame().
+  resetButton.addEventListener("click", resetGame);
+}
+
+
+// ==========================================
+// STEP 9:
+// Reset the entire game so the player
+// can play again.
+// ==========================================
+function resetGame() {
+
+  // Start counting turns from 1 again.
+  guessCount = 1;
+
+  // Select all result paragraphs.
+  const resetParas =
+    document.querySelectorAll(".resultParas p");
+
+  // Clear all displayed text.
+  for (const resetPara of resetParas) {
+    resetPara.textContent = "";
+  }
+
+  // Remove the restart button.
+  resetButton.parentNode.removeChild(resetButton);
+
+  // Re-enable the input controls.
+  guessField.disabled = false;
+  guessSubmit.disabled = false;
+
+  // Clear any value in the input box.
+  guessField.value = "";
+
+  // Put the cursor back into the input.
+  guessField.focus();
+
+  // Return the result area to its original color.
+  lastResult.style.backgroundColor = "white";
+
+  // Generate a brand-new random number
+  // for the next game.
+  randomNumber = Math.floor(Math.random() * 100) + 1;
+}
